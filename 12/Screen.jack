@@ -1,0 +1,211 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/12/Screen.jack
+
+/**
+ * A library of functions for displaying graphics on the screen.
+ * The Hack physical screen consists of 256 rows (indexed 0..255, top to bottom)
+ * of 512 pixels each (indexed 0..511, left to right). The top left pixel on 
+ * the screen is indexed (0,0).
+ */
+class Screen {
+    static int screenInit;
+    static int screenLimit;         
+    static boolean isBlack;         // true if the current color of drawing is black
+    static Array two2theI;          // two2theI map, used for displaying the powers of 2                                     
+
+
+    /** Initializes the Screen. */
+    function void init() {
+        let screenInit = 16384;
+        let isBlack = true;
+
+        // init the two2theI array
+        let two2theI = Array.new(16);
+        let two2theI[0] = 1;
+        let two2theI[1] = 2;
+        let two2theI[2] = 4;
+        let two2theI[3] = 8;
+        let two2theI[4] = 16;
+        let two2theI[5] = 32;
+        let two2theI[6] = 64;
+        let two2theI[7] = 128;
+        let two2theI[8] = 256;
+        let two2theI[9] = 512;
+        let two2theI[10] = 1024;
+        let two2theI[11] = 2048;
+        let two2theI[12] = 4096;
+        let two2theI[13] = 8192;
+        let two2theI[14] = 16384;
+        let two2theI[15] = -32767-1;
+
+        return;
+    }
+
+    /** Erases the entire screen. */
+    function void clearScreen() {
+        return;
+    }
+
+    /** Sets the current color, to be used for all subsequent drawXXX commands.
+     *  Black is represented by true, white by false. */
+    function void setColor(boolean b) {
+        let isBlack = b;
+        return;
+    }
+
+    /** Draws the (x,y) pixel, using the current color. */
+    function void drawPixel(int x, int y) {
+        var int address, value, modulo16;
+        let modulo16 = (x & 15);
+        let x = #(#(#(#(x))));
+        let y = ^(^(^(^(^(y)))));
+
+        let address = screenInit + y + x;
+        let value = Memory.peek(address);
+
+        if (isBlack) {
+            let value = two2theI[modulo16] | value;
+        } else {
+            let value = (~(two2theI[modulo16]) & value);
+        }
+
+        do Memory.poke(address, value);
+        return;
+    }
+
+    /** draw vertical line from (x,y) with length of dy */
+    function void drawVertical(int x, int y, int dy) {
+        while (dy > 0) {
+            do Screen.drawPixel(x, y + dy);
+            let dy = dy -1;
+        }
+        return;
+    }
+
+    /** draw horizontal line from (x,y) with length of dx */
+    function void drawHorizontal(int x1, int y, int x2) {
+        var int color;
+        if (isBlack) { let color = -1; } 
+        else { let color = 0; }
+
+        while (~(x1 > x2)) {
+            if (((x1 + 16) < x2) & ((x1 & 15)=0)) {
+                do Memory.poke(screenInit + (#(#(#(#(x1))))) + (^(^(^(^(^(y)))))), color);
+                let x1 = x1 + 16;
+            } else {
+                do Screen.drawPixel(x1, y);
+                let x1 = x1 + 1;
+            }
+        }
+        return;
+    }
+
+    /** Draws a line from pixel (x1,y1) to pixel (x2,y2), using the current color. */
+    function void drawLine(int x1, int y1, int x2, int y2) {
+        var int dx, dy, a, b, diff, temp;
+        let dx = Math.abs(x2 - x1);
+        let dy = Math.abs(y2 - y1);
+        let a = 0;
+        let b = 0;
+        let diff = 0;
+
+        // vertical line
+        if (x1=x2) {
+            do Screen.drawVertical(x1, Math.min(y1, y2), dy);
+            return;
+        }
+
+        // horizontal line
+        if (y1=y2) {
+            do Screen.drawHorizontal(Math.min(x1, x2), y1, Math.max(x1, x2));
+            return;
+        }
+
+        // north-west, replace the points so it would dealt as south-east 
+        if ((x1 > x2) & (y1 > y2)) {
+            let temp = x1;
+            let x1 = x2;
+            let x2 = temp;
+
+            let temp = y1;
+            let y1 = y2;
+            let y2 = temp;
+        }
+        
+        // south-east
+        if ((x1 < x2) & (y1 < y2)) {
+            while (~(a > dx) | ~(b > dy)) {
+
+                do Screen.drawPixel(x1 + a, y1 + b);
+
+                if (diff > 0) {             // turn right
+                    let a = a + 1;
+                    let diff = diff - dy;
+                } else {                    // turn up
+                    let b = b + 1;
+                    let diff = diff + dx;
+                }
+            }
+            return;
+        }
+
+        // south-west, replace the points so it would dealt as north-east 
+        if ((x1 > x2) & (y1 < y2)) {
+            let temp = x1;
+            let x1 = x2;
+            let x2 = temp;
+
+            let temp = y1;
+            let y1 = y2;
+            let y2 = temp;
+        }
+
+        // north-east
+        if ((x1 < x2) & (y1 > y2)) {
+            while (~(a > dx) | ~(b > dy)) {
+
+                do Screen.drawPixel(x1 + a, y1 - b);
+
+                if (diff > 0) {             // turn right
+                    let a = a + 1;
+                    let diff = diff - dy;
+                } else {                    // turn down
+                    let b = b + 1;
+                    let diff = diff + dx;
+                }
+            }
+        }
+        return;
+    }
+
+    /** Draws a filled rectangle whose top left corner is (x1, y1)
+     * and bottom right corner is (x2,y2), using the current color. */
+    function void drawRectangle(int x1, int y1, int x2, int y2) {
+        var int dy, dx;
+        let dy = y2-y1;
+        while (dy > 0) {
+            do Screen.drawHorizontal(x1, y1 + dy, x2);
+            let dy = dy - 1;
+        }
+        return;
+    }
+
+    /** Draws a filled circle of radius r<=181 around (x,y), using the current color. */
+    function void drawCircle(int x, int y, int r) {
+        var int dy, dx, squaredR;
+        if (r > 181) {
+            return;
+        }
+
+        let dy = -r;
+        let squaredR = r*r;
+        while (dy < (r + 1)) {
+            let dx = Math.sqrt(squaredR - (dy*dy));
+            do Screen.drawHorizontal(x - dx, y + dy, x + dx);
+            let dy = dy + 1;
+        }
+        return;
+    }
+}

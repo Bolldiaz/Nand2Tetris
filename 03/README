@@ -1,0 +1,33 @@
+bolldiaz, maya.swisa
+===============================================================================
+Matan Dizitser, ID 206200552, matan.dizitser@mail.huji.ac.il
+Maya Swisa, ID 209028760, maya.swisa@mail.huji.ac.il
+===============================================================================
+
+                           Project 3 - Sequential Logic
+                           ----------------------------
+  
+
+Submitted Files
+---------------
+README - This file.
+a/Bit.hdl - The Bit Chip.
+a/PC.hdl - The PC Chip.
+a/RAM8.hdl - The RAM8 Chip.
+a/RAM64.hdl - The RAM64 Chip.
+a/Register.hdl - The Register Chip.
+b/RAM4K.hdl - The RAM4K Chip.
+b/RAM16K.hdl - The RAM16k Chip.
+b/RAM512.hdl - The RAM512 Chip.
+Include other files required by your project, if there are any.
+
+Remarks
+-------
+* The README file must contain the following:
+- In the first line: login(s) of the author(s), 
+separated by commas and nothing else! 
+If you work alone, do not include a comma. 
+Logins should be identical to the names of your home folders and are 
+case-sensitive.
+- Name(s), email(s) and ID(s) of the project's author(s).
+- Any remarks you have about your submission.

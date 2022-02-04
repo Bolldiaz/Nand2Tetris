@@ -1,0 +1,181 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/12/String.jack
+
+/**
+ * Represents character strings. In addition for constructing and disposing
+ * strings, the class features methods for getting and setting individual
+ * characters of the string, for erasing the string's last character,
+ * for appending a character to the string's end, and more typical
+ * string-oriented operations.
+ */
+class String {
+
+    field int curlength, maxLength;
+    field Array arr;
+
+    /** constructs a new empty string with a maximum length of maxLength
+     *  and initial length of 0. */
+    constructor String new(int length) {
+        if (length < 1) {
+            let length = 1;
+        }
+
+        let curlength = 0;
+        let maxLength = length;
+        let arr = Array.new(length);
+        return this;
+    }
+
+    /** Disposes this string. */
+    method void dispose() {
+        let curlength = 0;
+        let maxLength = 0;
+        do arr.dispose();
+        return;
+    }
+
+    /** Returns the current length of this string. */
+    method int length() {
+        return curlength;
+    }
+
+    /** Returns the character at the j-th location of this string. */
+    method char charAt(int j) {
+        return arr[j];
+    }
+
+    /** Sets the character at the j-th location of this string to c. */
+    method void setCharAt(int j, char c) {
+        let arr[j] = c;
+        return;
+    }
+
+    /** Appends c to this string's end and returns this string. */
+    method String appendChar(char c) {
+        if ( curlength < maxLength ) {
+            let arr[curlength] = c;
+            let curlength = curlength + 1;
+        }
+        return this;
+    }
+
+    /** Erases the last character from this string. */
+    method void eraseLastChar() {
+        if ( curlength > 0 ) {
+            let curlength = curlength - 1;
+        }
+        return;
+    }
+
+    /** Check if the given char id a digit. */
+    function boolean isDig(char asc) {
+        return (asc > 47) & (asc < 58);
+    }
+
+    /** Convert the given digit as integer to the char representation of it. */
+    function char digToChar(int dig) {
+        return dig + 48;
+    }
+          
+    /** Convert the given digit as char to the int value of it. */
+    function int charToDig(char asc) {
+        return asc - 48;
+    }
+
+    /** Returns the integer value of this string, 
+     *  until a non-digit character is detected. */
+    method int intValue() {
+        var int returnValue, curIdx;
+        var boolean isNeg;
+        
+        // exsitnce check:
+        if (curlength = 0) {
+            return 0;
+        }
+
+        let isNeg = false;
+        let curIdx = 0;
+        let returnValue = 0;
+
+        // negative check:
+        if (arr[0] = 45) { // '-' = 45
+            let isNeg = true;
+            let curIdx = 1;
+        }
+
+        while ( (curIdx < curlength) & String.isDig(arr[curIdx])) {
+            let returnValue = (returnValue * 10) + arr[curIdx] - 48; // todo: check using shiftleft
+            let curIdx = curIdx + 1;
+        }
+        
+        if (isNeg) {
+            return -returnValue;
+        }
+
+        return returnValue;
+    }
+
+    /** Sets this string to hold a representation of the given value. */
+    method void setInt(int val) {
+        var Array newArr;
+        var int length, copyVal, reminder, idx;
+        var boolean isNeg;
+
+        let length = 0;
+
+        // negative check:
+        if (val < 0) { 
+            let isNeg = true;
+            let length = 1;
+            let val = -val;
+        }
+
+        // calculate the length of the new string
+        let copyVal = val;
+        while (copyVal > 0) {
+            let copyVal = copyVal / 10;
+            let length = length + 1;
+        }
+
+        let newArr = Array.new(length);
+        let idx = length;
+
+        // insert the char representation of each digit from right to left.
+        while (val > 0) {
+            let copyVal = val;
+            let val = val / 10;
+            let reminder = copyVal - (val * 10);
+            let idx = idx - 1;
+            let newArr[idx] = String.digToChar(reminder);
+        }
+
+        // insert '-' in the first index.
+        if (isNeg) {
+            let newArr[0] = 45;    
+        }
+
+        // dispose previous string, and copy from temp by value
+        do dispose();
+        let arr = newArr;
+        let curlength = length;
+        let maxLength = length;
+        return;
+    }
+
+    /** Returns the new line character. */
+    function char newLine() {
+        return 128;
+    }
+
+    /** Returns the backspace character. */
+    function char backSpace() {
+        return 129;
+    }
+
+    /** Returns the double quote (") character. */
+    function char doubleQuote() {
+        return 34;
+    }
+}

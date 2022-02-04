@@ -1,0 +1,30 @@
+bolldiaz, maya.swisa
+===============================================================================
+Matan Dizitser, ID 206200552, matan.dizitser@mail.huji.ac.il
+Maya Swisa, ID 209028760, maya.swisa@mail.huji.ac.il
+===============================================================================
+
+                           Project 10 - Compilation
+                           ------------------------
+  
+
+Submitted Files
+---------------
+README - This file.
+JackAnalyzer - The executable.
+Makefile - A makefile for the project.
+JackAnalyzer.py - Active the compilation Process
+JackTokenizer.py - Parse the given jack file to tokens
+CompilationEngine.py - Use the tokenizer to compile each token
+Include other files required by your project, if there are any.
+
+Remarks
+-------
+* The README file must contain the following:
+- In the first line: login(s) of the author(s), 
+separated by commas and nothing else! 
+If you work alone, do not include a comma. 
+Logins should be identical to the names of your home folders and are 
+case-sensitive.
+- Name(s), email(s) and ID(s) of the project's author(s).
+- Any remarks you have about your submission.

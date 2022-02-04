@@ -1,0 +1,31 @@
+bolldiaz, maya.swisa
+===============================================================================
+Matan Dizitser, ID 206200552, matan.dizitser@mail.huji.ac.il
+Maya Swisa, ID 209028760, maya.swisa@mail.huji.ac.il
+===============================================================================
+
+                           Project 6 - Assembler
+                           -------------------------
+  
+
+Submitted Files
+---------------
+README - This file.
+Assembler - The executable.
+Makefile - A makefile for the project.
+Main.py - Create a .hack file, from a .asm input file.
+Parser.py - Parse all the lines of a given .asm file
+Code.py - Convert each asm command into hack commands
+SymbolTable.py - struct contain all the symbol of the given asm file
+Include other files required by your project, if there are any.
+
+Remarks
+-------
+* The README file must contain the following:
+- In the first line: login(s) of the author(s), 
+separated by commas and nothing else! 
+If you work alone, do not include a comma. 
+Logins should be identical to the names of your home folders and are 
+case-sensitive.
+- Name(s), email(s) and ID(s) of the project's author(s).
+- Any remarks you have about your submission.

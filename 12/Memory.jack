@@ -1,0 +1,115 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/12/Memory.jack
+
+/**
+ * This library provides two services: direct access to the computer's main
+ * memory (RAM), and allocation and recycling of memory blocks. The Hack RAM
+ * consists of 32,768 words, each holding a 16-bit binary number.
+ */ 
+class Memory {
+    static Array ram;
+    static Array heap;
+    static int freeList;
+
+    /** Initializes the class. */
+    function void init() {
+        let ram = 0;
+        let heap = 2048;
+        let freeList = heap;
+        let freeList[0] = 14334;
+        let freeList[1] = null;
+        return;
+    }
+
+    /** Returns the RAM value at the given address. */
+    function int peek(int address) {
+        return ram[address];
+    }
+
+    /** Sets the RAM value at the given address to the given value. */
+    function void poke(int address, int value) {
+        let ram[address] = value;
+        return;
+    }
+
+    /** Finds an available RAM block of the given size and returns
+     *  a reference to its base address. */
+    function int alloc(int size) {
+        var Array currList, preList, block;
+        var int newN;
+        
+        let currList = freeList;
+        let preList = null;
+        
+        // search for a free space of at least size of 'size' + 2
+        while (currList[0] < size + 1) {
+            let preList = currList;
+            let currList = currList[1];
+        }
+
+        // no space has found
+        if (currList[0] = null) { return -1; }
+
+        let newN = currList[0] - (size + 1);
+        
+        // case1: currList is way more bigger then size
+        if (newN > 3) {
+            let currList[0] = newN; 
+            let currList[newN] = size + 1;
+            let block = currList + newN + 1;
+        }
+
+        // case2: currList needs to get erased of freeList
+        else {
+            let block = currList + 1;
+            let currList[0] = size + 1;
+            
+            if (preList = null) { let freeList = freeList[1]; }    // freeList = freeList.next 
+            
+            else { let preList[1] = currList[1]; }  // preList.next = currList.next 
+        }
+
+        return block;
+    }
+
+    /** De-allocates the given object (cast as an array) by making
+     *  it available for future allocations. */
+    function void deAlloc(Array o) {
+        // update the object.next pointer to null
+        var Array currList;
+
+        let currList = freeList;
+        let o[0] = null;
+        // goto the last element in freeList
+        while (~(currList[1] = null)) {
+            // cur =  cur.next
+            let currList = currList[1]; 
+        }
+
+        // lastList.next = object - 1;
+        let currList[1] = o - 1;
+        
+        return;
+    }
+
+    /** Returns the maximal element contained in the object/array located at given address. */
+    function int max(int address) {
+        var Array arr;
+        var int n, max_;
+        
+        let arr = address;
+        let n = arr[-1] - 2;
+        let max_ = arr[n];
+
+        while ( -1 < n ) {
+
+            if (max_ < arr[n]) { 
+                let max_ = arr[n]; 
+            }
+            let n = n - 1;
+        }
+        return max_;
+    }    
+}
